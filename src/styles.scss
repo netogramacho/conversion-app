@@ -1,1 +1,59 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Background colors */
+  --surface-primary: #FFFFFF;
+  --surface-secondary: #F6F6F6;
+  --surface-tertiary: #F4F4F4;
+  --background-app: #EEEEEE;
+  --border-color: #CCCCCC;
+
+  /* Text colors */
+  --text-primary: #717171;
+  --text-secondary: #919191;
+  --text-green: #3C7649;
+  --text-blue: #3684CB;
+  --text-red: #DD4B4B;
+
+  /* Font sizes */
+  --font-size-10: 10px;
+  --font-size-12: 12px;
+  --font-size-14: 14px;
+  --font-size-16: 16px;
+  --font-size-18: 18px;
+  --font-size-20: 20px;
+  --font-size-24: 24px;
+  --font-size-30: 30px;
+  --font-size-64: 64px;
+
+  /* Spacings */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+  --spacing-xxxl: 64px;
+
+  /* Border radius */
+  --border-radius: 10px;
+}
+
+body {
+  margin: 0;
+  font-family: 'Poppins', Arial, sans-serif;
+  background-color: var(--background-app);
+  color: var(--text-primary);
+}
+
+.text-red {
+  color: var(--text-red);
+}
+
+.text-blue {
+  color: var(--text-blue);
+}
+
+.text-green {
+  color: var(--text-green);
+}
