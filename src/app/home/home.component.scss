@@ -1,6 +1,7 @@
 .home {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   gap: var(--spacing-xxxl);
+  min-height: calc(100vh - 40px - var(--spacing-md) * 2);
 }

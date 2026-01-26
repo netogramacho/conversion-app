@@ -3,11 +3,7 @@
     <span class="card-header-title">{{ currency().title }}</span>
   </div>
   <div class="card-body">
-    <span class="card-body-content" [ngClass]="{
-      'text-red': currency().currentValue < 1,
-      'text-blue': currency().currentValue >= 1 && currency().currentValue <= 5,
-      'text-green': currency().currentValue > 5
-    }">{{ currency().currentValue | currency:'BRL' }}</span>
+    <span class="card-body-content" [class]="valueColorClass()">{{ currency().currentValue | currency:'BRL' }}</span>
   </div>
   <div class="card-footer">
     <div class="card-footer-variation">

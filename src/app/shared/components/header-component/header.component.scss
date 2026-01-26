@@ -1,0 +1,14 @@
+.header {
+  width: 100%;
+  padding: var(--spacing-md) 0;
+  background-color: var(--surface-primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: sticky;
+  top: 0;
+
+  &-logo {
+    height: 40px;
+  }
+}
