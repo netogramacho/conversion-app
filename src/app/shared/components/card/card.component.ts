@@ -1,5 +1,6 @@
-import { Component, input, computed } from '@angular/core';
-import { CurrencyPipe, NgClass } from '@angular/common';
+import { Component, input, computed, output } from '@angular/core';
+import { CurrencyPipe } from '@angular/common';
+import { IQuote } from '../../quote';
 
 @Component({
   selector: 'app-card',
@@ -10,13 +11,34 @@ import { CurrencyPipe, NgClass } from '@angular/common';
 })
 export class CardComponent {
 
-  currency = input({title: '', currentValue: 0, variation: '', updated: ''});
+  private readonly VALUE_THRESHOLDS = {
+    LOW: 1,
+    HIGH: 5,
+  };
+
+  currency = input.required<IQuote>();
+  loading = input<boolean>(false);
+  error = input<string | null>(null);
+
+  reloadRequest = output<void>();
 
   valueColorClass = computed(() => {
-    const value = this.currency().currentValue;
-    if (value <= 1) return 'text-red';
-    if (value > 5) return 'text-blue';
+    const value = this.currency()?.currentValue;
+    if (!value || value <= this.VALUE_THRESHOLDS.LOW) return 'text-red';
+    if (value > this.VALUE_THRESHOLDS.HIGH) return 'text-blue';
     return 'text-green';
   });
+
+  reload() {
+    this.reloadRequest.emit();
+  }
+
+  getValueDescription(): string {
+    const value = this.currency()?.currentValue;
+    if (!value) return 'Valor indisponível';
+    if (value <= 1) return `Valor baixo: ${value}`;
+    if (value > 5) return `Valor alto: ${value}`;
+    return `Valor médio: ${value}`;
+  }
 
 }

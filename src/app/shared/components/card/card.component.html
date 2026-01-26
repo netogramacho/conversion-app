@@ -2,17 +2,41 @@
   <div class="card-header">
     <span class="card-header-title">{{ currency().title }}</span>
   </div>
-  <div class="card-body">
-    <span class="card-body-content" [class]="valueColorClass()">{{ currency().currentValue | currency:'BRL' }}</span>
-  </div>
-  <div class="card-footer">
-    <div class="card-footer-variation">
-      <span class="card-footer-variation-label">Variação (%)</span>
-      <span class="card-footer-variation-value">{{ currency().variation }}</span>
+  @if (loading()) {
+    <div class="card-loader">
+      <img src="loader.svg" class="card-loader-spinner" alt="Carregando cotação" role="status" />
     </div>
-    <div class="card-footer-updated">
-      <span class="card-footer-updated-label">Atualizado</span>
-      <span class="card-footer-updated-value">{{ currency().updated }}</span>
+  }
+
+  @if(error()) {
+    <div class="card-error">
+      <span class="card-error-message">{{ error() }}</span>
+      <button
+        type="button"
+        (click)="reload()"
+        class="card-error-reload-button"
+        aria-label="Recarregar cotação">Recarregar</button>
     </div>
-  </div>
+  }
+
+  @if (!loading() && !error()) {
+    <div class="card-body">
+      <span
+        class="card-body-content"
+        [class]="valueColorClass()"
+        [attr.aria-label]="getValueDescription()">
+          {{ currency().currentValue | currency:'BRL' }}
+      </span>
+    </div>
+    <div class="card-footer">
+      <div class="card-footer-variation">
+        <span class="card-footer-variation-label">Variação (%)</span>
+        <span class="card-footer-variation-value">{{ currency().variation }}</span>
+      </div>
+      <div class="card-footer-updated">
+        <span class="card-footer-updated-label">Atualizado</span>
+        <span class="card-footer-updated-value">{{ currency().updated }}</span>
+      </div>
+    </div>
+  }
 </div>

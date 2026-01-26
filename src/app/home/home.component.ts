@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { ConversionService } from './../service/conversion.service';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CardComponent } from '../shared/components/card/card.component';
-import { ɵEmptyOutletComponent } from "@angular/router";
 
 @Component({
   selector: 'app-home',
@@ -9,12 +9,23 @@ import { ɵEmptyOutletComponent } from "@angular/router";
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit, OnDestroy {
 
-  data = [
-    { title: 'Peso Argentino', currentValue: 4.37, variation: '+2,34%', updated: '08:00:54' },
-    { title: 'Dólar Canadense', currentValue: 0.05, variation: '+1,12%', updated: '08:00:54' },
-    { title: 'Libra Esterlina', currentValue: 7.52, variation: '-0,56%', updated: '08:00:54' },
-  ];
+  conversionService = inject(ConversionService);
+  quotes = this.conversionService.quotes;
+  loading = this.conversionService.loading;
+  error = this.conversionService.error;
+
+  ngOnInit(): void {
+    this.conversionService.startGetConversionRates();
+  }
+
+  ngOnDestroy(): void {
+    this.conversionService.stopGetConversionRates();
+  }
+
+  reload() {
+    this.conversionService.startGetConversionRates();
+  }
 
 }

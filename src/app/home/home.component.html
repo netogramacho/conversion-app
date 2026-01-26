@@ -1,5 +1,5 @@
 <main class="home">
-  @for (item of data; track $index) {
-    <app-card [currency]="item"></app-card>
+  @for (item of conversionService.quotes(); track $index) {
+    <app-card [currency]="item" [loading]="loading()" [error]="error()" (reloadRequest)="reload()"></app-card>
   }
 </main>
