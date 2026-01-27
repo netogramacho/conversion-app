@@ -15,8 +15,12 @@ export class ConversionApi {
 
   getQuotes(): Observable<Record<string, IQuoteResponse>> {
     return this.httpClient.get<Record<string, IQuoteResponse>>(`${environment.quoteApi.baseUrl}CAD-BRL,ARS-BRL,GBP-BRL`, {
-      context: new HttpContext().set(USE_QUOTE_TOKEN, true)
+      context: new HttpContext().set(USE_QUOTE_TOKEN, this.checkApiTokenExists()),
     });
+  }
+
+  private checkApiTokenExists(): boolean {
+    return !!environment.quoteApi.apiKey;
   }
 
 }
