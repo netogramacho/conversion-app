@@ -5,7 +5,7 @@ import localePt from '@angular/common/locales/pt';
 
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { QuoteApiInterceptor } from './intereceptors/quote-api.interceptor';
+import { QuoteApiInterceptor } from './interceptors/quote-api.interceptor';
 
 registerLocaleData(localePt);
 

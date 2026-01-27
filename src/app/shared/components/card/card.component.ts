@@ -1,6 +1,6 @@
 import { Component, input, computed, output } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
-import { IQuote } from '../../quote';
+import { IQuote } from '../../../domain/quote';
 
 @Component({
   selector: 'app-card',
