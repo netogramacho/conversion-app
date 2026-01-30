@@ -4,10 +4,18 @@ import { vi } from 'vitest';
 import { ConversionService } from './conversion.service';
 import { ConversionApi } from '../api/conversion.api';
 import { IQuoteResponse } from '../domain/quoteResponse';
+import { QuoteCacheService } from './quote-cache.service';
+import { IQuote } from '../domain/quote';
 
 describe('ConversionService', () => {
   let service: ConversionService;
   let conversionApiMock: { getQuotes: ReturnType<typeof vi.fn> };
+  let quoteCacheServiceMock: {
+    get: ReturnType<typeof vi.fn>;
+    set: ReturnType<typeof vi.fn>;
+    clear: ReturnType<typeof vi.fn>;
+    getRemainingTime: ReturnType<typeof vi.fn>;
+  };
 
   const mockApiResponse: Record<string, IQuoteResponse> = {
     'CADBRL': {
@@ -56,10 +64,18 @@ describe('ConversionService', () => {
       getQuotes: vi.fn()
     };
 
+    quoteCacheServiceMock = {
+      get: vi.fn().mockReturnValue(null),
+      set: vi.fn(),
+      clear: vi.fn(),
+      getRemainingTime: vi.fn().mockReturnValue(0)
+    };
+
     TestBed.configureTestingModule({
       providers: [
         ConversionService,
-        { provide: ConversionApi, useValue: conversionApiMock }
+        { provide: ConversionApi, useValue: conversionApiMock },
+        { provide: QuoteCacheService, useValue: quoteCacheServiceMock }
       ]
     });
 
@@ -68,6 +84,7 @@ describe('ConversionService', () => {
 
   afterEach(() => {
     service.stopGetConversionRates();
+    localStorage.clear();
   });
 
   it('should be created', () => {
@@ -218,4 +235,139 @@ describe('ConversionService', () => {
       expect(conversionApiMock.getQuotes.mock.calls.length).toBe(callCount);
     });
   });
+
+  describe('Cache Integration and Smart Polling', () => {
+    const mockCachedQuotes: IQuote[] = [
+      {
+        code: 'USD',
+        title: 'Dólar',
+        currentValue: 5.50,
+        variation: '+1.2%',
+        updated: '10:00:00'
+      }
+    ];
+
+    describe('Cache Hit - Valid Cache', () => {
+      it('should emit quotes immediately from cache without HTTP call', async () => {
+        quoteCacheServiceMock.get.mockReturnValue(mockCachedQuotes);
+        quoteCacheServiceMock.getRemainingTime.mockReturnValue(150000); // 2.5 minutos restantes
+
+        service.startGetConversionRates();
+
+        // Quotes should be set immediately from cache
+        expect(service.quotes()).toEqual(mockCachedQuotes);
+        
+        // No immediate HTTP call
+        expect(conversionApiMock.getQuotes).not.toHaveBeenCalled();
+      });
+
+      it('should calculate initial delay based on remaining cache time', async () => {
+        const remainingTime = 120000; // 2 minutos
+        quoteCacheServiceMock.get.mockReturnValue(mockCachedQuotes);
+        quoteCacheServiceMock.getRemainingTime.mockReturnValue(remainingTime);
+
+        service.startGetConversionRates();
+        
+        // Quotes loaded from cache
+        expect(service.quotes()).toEqual(mockCachedQuotes);
+        
+        // No immediate call
+        expect(conversionApiMock.getQuotes).not.toHaveBeenCalled();
+      });
+
+      it('should handle negative remaining time as zero delay', async () => {
+        quoteCacheServiceMock.get.mockReturnValue(mockCachedQuotes);
+        quoteCacheServiceMock.getRemainingTime.mockReturnValue(-5000); // tempo negativo
+        conversionApiMock.getQuotes.mockReturnValue(of(mockApiResponse));
+
+        service.startGetConversionRates();
+        await new Promise(resolve => setTimeout(resolve, 10));
+
+        // Should make immediate HTTP call with 0 delay
+        expect(conversionApiMock.getQuotes).toHaveBeenCalled();
+      });
+    });
+
+    describe('Cache Miss - No Cache or Expired', () => {
+      it('should make immediate HTTP call when cache is empty', async () => {
+        quoteCacheServiceMock.get.mockReturnValue(null);
+        quoteCacheServiceMock.getRemainingTime.mockReturnValue(0);
+        conversionApiMock.getQuotes.mockReturnValue(of(mockApiResponse));
+
+        service.startGetConversionRates();
+        await new Promise(resolve => setTimeout(resolve, 10));
+
+        expect(conversionApiMock.getQuotes).toHaveBeenCalled();
+      });
+
+      it('should make immediate HTTP call when cache is expired', async () => {
+        quoteCacheServiceMock.get.mockReturnValue(null);
+        quoteCacheServiceMock.getRemainingTime.mockReturnValue(0);
+        conversionApiMock.getQuotes.mockReturnValue(of(mockApiResponse));
+
+        service.startGetConversionRates();
+        await new Promise(resolve => setTimeout(resolve, 10));
+
+        expect(conversionApiMock.getQuotes).toHaveBeenCalled();
+        expect(service.loading()).toBeFalsy();
+      });
+    });
+
+    describe('Cache Persistence After API Response', () => {
+      it('should save data to cache after successful API call', async () => {
+        quoteCacheServiceMock.get.mockReturnValue(null);
+        quoteCacheServiceMock.getRemainingTime.mockReturnValue(0);
+        conversionApiMock.getQuotes.mockReturnValue(of(mockApiResponse));
+
+        service.startGetConversionRates();
+        await new Promise(resolve => setTimeout(resolve, 10));
+
+        expect(quoteCacheServiceMock.set).toHaveBeenCalled();
+        const savedQuotes = quoteCacheServiceMock.set.mock.calls[0][0];
+        expect(savedQuotes).toHaveLength(3);
+        expect(savedQuotes[0].code).toBe('CAD');
+      });
+
+      it('should not save to cache on API error', async () => {
+        quoteCacheServiceMock.get.mockReturnValue(null);
+        quoteCacheServiceMock.getRemainingTime.mockReturnValue(0);
+        conversionApiMock.getQuotes.mockReturnValue(throwError(() => new Error('API Error')));
+
+        service.startGetConversionRates();
+        await new Promise(resolve => setTimeout(resolve, 10));
+
+        expect(quoteCacheServiceMock.set).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('forceRefresh', () => {
+    it('should clear cache and restart polling', async () => {
+      quoteCacheServiceMock.get.mockReturnValue(null);
+      quoteCacheServiceMock.getRemainingTime.mockReturnValue(0);
+      conversionApiMock.getQuotes.mockReturnValue(of(mockApiResponse));
+
+      service.forceRefresh();
+
+      expect(quoteCacheServiceMock.clear).toHaveBeenCalled();
+      
+      await new Promise(resolve => setTimeout(resolve, 10));
+      expect(conversionApiMock.getQuotes).toHaveBeenCalled();
+    });
+
+    it('should force immediate API call even with valid cache', async () => {
+      // Reset mocks to simulate cleared cache before forceRefresh
+      quoteCacheServiceMock.get.mockReturnValue(null);
+      quoteCacheServiceMock.getRemainingTime.mockReturnValue(0);
+      conversionApiMock.getQuotes.mockReturnValue(of(mockApiResponse));
+
+      service.forceRefresh();
+
+      expect(quoteCacheServiceMock.clear).toHaveBeenCalled();
+      
+      await new Promise(resolve => setTimeout(resolve, 10));
+      expect(conversionApiMock.getQuotes).toHaveBeenCalled();
+    });
+  });
 });
+

@@ -3,5 +3,6 @@ export const environment = {
   quoteApi: {
     baseUrl: 'https://economia.awesomeapi.com.br/json/last/',
     apiKey: 'YOUR_API_KEY_HERE'
-  }
+  },
+  CACHE_TTL: 180000 // 3 minutos em milissegundos
 };

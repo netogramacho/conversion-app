@@ -23,6 +23,7 @@ describe('HomeComponent', () => {
     mockConversionService = {
       startGetConversionRates: vi.fn(),
       stopGetConversionRates: vi.fn(),
+      forceRefresh: vi.fn(),
       quotes: signal<IQuote[]>(mockQuotes),
       loading: signal(false),
       error: signal<string | null>(null)
@@ -58,10 +59,9 @@ describe('HomeComponent', () => {
   });
 
   describe('reload method', () => {
-    it('should call startGetConversionRates when reload is called', () => {
-      mockConversionService.startGetConversionRates.mockClear();
+    it('should call forceRefresh when reload is called', () => {
       component.reload();
-      expect(mockConversionService.startGetConversionRates).toHaveBeenCalled();
+      expect(mockConversionService.forceRefresh).toHaveBeenCalled();
     });
   });
 

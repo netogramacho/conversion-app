@@ -25,7 +25,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   reload() {
-    this.conversionService.startGetConversionRates();
+    this.conversionService.forceRefresh();
   }
 
 }
