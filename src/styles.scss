@@ -1,5 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
+/* Breakpoints Configuration */
+$mobile-breakpoint: 480px;
+$tablet-breakpoint: 768px;
+$desktop-breakpoint: 769px;
+
 :root {
   /* Background colors */
   --surface-primary: #FFFFFF;
@@ -26,7 +31,7 @@
   --font-size-30: 30px;
   --font-size-64: 64px;
 
-  /* Spacings */
+  /* Spacings - Desktop (Base) */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
@@ -37,6 +42,28 @@
 
   /* Border radius */
   --border-radius: 10px;
+}
+
+/* Responsive Spacings */
+@media screen and (max-width: $tablet-breakpoint) {
+  :root {
+    --spacing-xxxl: 48px;
+    --spacing-xxl: 32px;
+    --spacing-xl: 24px;
+  }
+}
+
+@media screen and (max-width: $mobile-breakpoint) {
+  :root {
+    --spacing-xxxl: 32px;
+    --spacing-xxl: 24px;
+    --spacing-xl: 20px;
+    --spacing-lg: 16px;
+
+    /* Adjust font sizes for mobile if needed, e.g. large titles */
+    --font-size-64: 40px;
+    --font-size-30: 24px;
+  }
 }
 
 body {

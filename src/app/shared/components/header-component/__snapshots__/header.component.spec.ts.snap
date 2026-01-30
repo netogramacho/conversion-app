@@ -1,0 +1,21 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`HeaderComponent > should match snapshot 1`] = `
+<div
+  _nghost-a-c3452497469=""
+  id="root1"
+  ng-version="21.1.1"
+>
+  <div
+    _ngcontent-a-c3452497469=""
+    class="header"
+  >
+    <img
+      _ngcontent-a-c3452497469=""
+      alt="Logo"
+      class="header-logo"
+      src="logo.svg"
+    />
+  </div>
+</div>
+`;

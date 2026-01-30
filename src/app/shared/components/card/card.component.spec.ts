@@ -28,6 +28,10 @@ describe('CardComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should match snapshot', () => {
+    expect(compiled).toMatchSnapshot();
+  });
+
   describe('Rendering normal state', () => {
     it('should render currency title', () => {
       fixture.componentRef.setInput('currency', mockCurrency);

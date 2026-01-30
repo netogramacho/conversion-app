@@ -22,6 +22,10 @@ describe('HeaderComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should match snapshot', () => {
+    expect(compiled).toMatchSnapshot();
+  });
+
   it('should render header container', () => {
     const headerElement = compiled.querySelector('.header');
     expect(headerElement).toBeTruthy();

@@ -1,0 +1,29 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CardComponent > should match snapshot 1`] = `
+<div
+  _nghost-a-c3614418209=""
+  id="root1"
+  ng-version="21.1.1"
+>
+  <div
+    _ngcontent-a-c3614418209=""
+    class="card"
+  >
+    <div
+      _ngcontent-a-c3614418209=""
+      class="card-header"
+    >
+      <span
+        _ngcontent-a-c3614418209=""
+        class="card-header-title"
+      >
+        
+      </span>
+    </div>
+    <!--container-->
+    <!--container-->
+    <!--container-->
+  </div>
+</div>
+`;

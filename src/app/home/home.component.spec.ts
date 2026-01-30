@@ -46,6 +46,10 @@ describe('HomeComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should match snapshot', () => {
+    expect(fixture.nativeElement).toMatchSnapshot();
+  });
+
   describe('Lifecycle Hooks', () => {
     it('should call startGetConversionRates on ngOnInit', () => {
       component.ngOnInit();

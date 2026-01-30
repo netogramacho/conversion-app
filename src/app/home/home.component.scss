@@ -4,4 +4,22 @@
   justify-content: center;
   gap: var(--spacing-xxxl);
   min-height: calc(100vh - 40px - var(--spacing-md) * 2);
+  padding: var(--spacing-md);
+  box-sizing: border-box;
+
+  app-card {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  @media screen and (max-width: 1024px) {
+    flex-wrap: wrap;
+    min-height: auto;
+    padding-top: var(--spacing-xxl);
+    padding-bottom: var(--spacing-xxl);
+  }
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+  }
 }
